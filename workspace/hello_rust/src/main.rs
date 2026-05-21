@@ -1,14 +1,19 @@
-const SAFETY_DISTANCE: f64 = 0.7;
+use tokio::time::{sleep, Duration};
 
-fn is_obstacle_too_close(distance: f64) -> bool {
-    distance < SAFETY_DISTANCE
+async fn sensor_task() {
+    for i in 1..=5 {
+        println!("[Sensor Task] 센서 데이터 수집 {}", i);
+        sleep(Duration::from_millis(500)).await;
+    }
 }
 
-fn main() {
-    let lidar_distance: f64 = 0.45;
+#[tokio::main]
+async fn main() {
+    let handle = tokio::spawn(sensor_task());
 
-    let danger = is_obstacle_too_close(lidar_distance);
+    println!("main은 sensor_task를 spawn했습니다.");
 
-    println!("라이다 거리: {} m", lidar_distance);
-    println!("장애물이 너무 가까운가? {}", danger);
+    handle.await.expect("sensor_task 실행 실패");
+
+    println!("main 종료");
 }
